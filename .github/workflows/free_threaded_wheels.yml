@@ -25,6 +25,7 @@ on:
     push:
       branches:
         - maintenance/**
+        - macos_ft_wheels
     pull_request:
       branches:
         - main
