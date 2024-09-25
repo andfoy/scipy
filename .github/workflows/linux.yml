@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - maintenance/**
+      - local_parallel_testing
   pull_request:
     branches:
       - main
       - maintenance/**
+      - local_parallel_testing
 
 permissions:
    contents: read  # to fetch code (actions/checkout)
@@ -454,9 +456,9 @@ jobs:
       matrix:
         parallel: ['0', '1']
     runs-on: ubuntu-latest
-    if: >
-      needs.get_commit_message.outputs.message == 1
-      && (github.repository == 'scipy/scipy' || github.repository == '')
+    # if: >
+    #   needs.get_commit_message.outputs.message == 1
+    #   && (github.repository == 'scipy/scipy' || github.repository == '')
     steps:
     - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       with:
@@ -502,6 +504,9 @@ jobs:
         PKG_CONFIG_PATH="$PWD" pip install . -vv --no-build-isolation
         pushd $RUNNER_TEMP
         PYTHON_GIL=0 python -m pytest --pyargs scipy -n2 --durations=10 $EXTRA_PYTEST_ARGS
+    - name: Debug via SSH
+      if: ${{ matrix.parallel == '1' && failure() }}
+      uses: mxschmitt/action-tmate@v3
   #################################################################################
   clang-17-build-only:
     # Purpose is to check for warnings in builds with latest clang.
