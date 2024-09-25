@@ -488,6 +488,7 @@ jobs:
         pip install -r requirements/openblas.txt
     - name: Install pytest-run-parallel
       if: ${{ matrix.parallel == '1'}}
+      continue-on-error: true
       run: |
         pip install git+https://github.com/Quansight-Labs/pytest-run-parallel
         echo "EXTRA_PYTEST_ARGS=--parallel-threads=10" >> "$GITHUB_ENV"
@@ -505,7 +506,7 @@ jobs:
         pushd $RUNNER_TEMP
         PYTHON_GIL=0 python -m pytest --pyargs scipy -n2 --durations=10 $EXTRA_PYTEST_ARGS
     - name: Debug via SSH
-      if: ${{ matrix.parallel == '1' && failure() }}
+      if: ${{ matrix.parallel == '1' }}
       uses: mxschmitt/action-tmate@v3
   #################################################################################
   clang-17-build-only:
