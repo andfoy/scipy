@@ -488,11 +488,11 @@ jobs:
         pip install -r requirements/openblas.txt
     - name: Install pytest-run-parallel
       if: ${{ matrix.parallel == '1'}}
-      continue-on-error: true
       run: |
         pip install git+https://github.com/Quansight-Labs/pytest-run-parallel
         echo "EXTRA_PYTEST_ARGS=--parallel-threads=10" >> "$GITHUB_ENV"
     - name: Build and run tests
+      continue-on-error: true
       env:
         PYTHON_GIL: 0
       # TODO: For some reason the Meson installation path points to
