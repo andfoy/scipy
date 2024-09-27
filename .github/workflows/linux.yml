@@ -493,9 +493,9 @@ jobs:
       run: |
         pip install git+https://github.com/Quansight-Labs/pytest-run-parallel
         echo "EXTRA_PYTEST_ARGS=--parallel-threads=3" >> "$GITHUB_ENV"
-    - name: Debug via SSH
-      if: ${{ matrix.parallel == '1' }}
-      uses: mxschmitt/action-tmate@v3
+    # - name: Debug via SSH
+    #   if: ${{ matrix.parallel == '1' }}
+    #   uses: mxschmitt/action-tmate@v3
     - name: Build and run tests
       continue-on-error: true
       env:
