@@ -453,6 +453,7 @@ jobs:
   free-threaded:
     needs: get_commit_message
     strategy:
+      fail-fast: false
       matrix:
         parallel: ['0', '1']
     runs-on: ubuntu-latest
@@ -488,9 +489,13 @@ jobs:
         pip install -r requirements/openblas.txt
     - name: Install pytest-run-parallel
       if: ${{ matrix.parallel == '1'}}
+      continue-on-error: true
       run: |
         pip install git+https://github.com/Quansight-Labs/pytest-run-parallel
         echo "EXTRA_PYTEST_ARGS=--parallel-threads=10" >> "$GITHUB_ENV"
+    - name: Debug via SSH
+      if: ${{ matrix.parallel == '1' }}
+      uses: mxschmitt/action-tmate@v3
     - name: Build and run tests
       continue-on-error: true
       env:
@@ -505,9 +510,6 @@ jobs:
         PKG_CONFIG_PATH="$PWD" pip install . -vv --no-build-isolation
         pushd $RUNNER_TEMP
         PYTHON_GIL=0 python -m pytest --pyargs scipy -n2 --durations=10 $EXTRA_PYTEST_ARGS
-    - name: Debug via SSH
-      if: ${{ matrix.parallel == '1' }}
-      uses: mxschmitt/action-tmate@v3
   #################################################################################
   clang-17-build-only:
     # Purpose is to check for warnings in builds with latest clang.
